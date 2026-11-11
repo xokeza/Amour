@@ -27,8 +27,10 @@ coverage/
 *.sqlite3
 *.db
 *.db-*
-data/
-backups/
+/data/
+/api/data/
+/backups/
+/api/backups/
 credentials.json
 signing-lineage.bin
 
@@ -89,3 +91,14 @@ test_stills/
 .coderabbit.yaml
 .coderabbit.yml
 .continue/
+
+# Distribution artifacts
+*.AppImage
+*.apk
+*.aab
+*.idsig
+*.blockmap
+MEMORY.md
+.gemini/
+.opencode/
+.mcp.json
