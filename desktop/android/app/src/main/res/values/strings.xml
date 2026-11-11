@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Amour!</string>
+    <string name="title_activity_main">Amour!</string>
+    <string name="package_name">su.xokeza.amour</string>
+    <string name="custom_url_scheme">su.xokeza.amour</string>
+</resources>

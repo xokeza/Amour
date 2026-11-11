@@ -1,0 +1,101 @@
+name: Desktop release
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  VITE_API_URL: https://xokeza.su/amour/api
+  VITE_COVERS_PROXY_URL: https://covers.tryliner.fun
+  CSC_IDENTITY_AUTO_DISCOVERY: "false"
+
+jobs:
+  build:
+    name: Build ${{ matrix.platform }} x64
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: linux
+            os: ubuntu-latest
+          - platform: windows
+            os: windows-latest
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        working-directory: desktop
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: desktop/pnpm-lock.yaml
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Install Electron runtime
+        run: node node_modules/electron/install.js
+      - name: Validate release version
+        shell: bash
+        run: |
+          node --input-type=module -e 'import fs from "node:fs";const v=JSON.parse(fs.readFileSync("package.json")).version;if(process.env.GITHUB_REF_TYPE==="tag" && process.env.GITHUB_REF_NAME!==`v${v}`)throw new Error("Tag and package version differ")'
+      - name: Check types and build renderer
+        run: pnpm build
+      - name: Build Windows native integration
+        if: matrix.platform == 'windows'
+        run: pnpm native:build
+      - name: Package Linux AppImage
+        if: matrix.platform == 'linux'
+        run: pnpm exec electron-builder --linux AppImage --x64 --publish never
+      - name: Package Windows Setup
+        if: matrix.platform == 'windows'
+        run: pnpm exec electron-builder --win nsis --x64 --publish never
+      - name: Verify Windows native integration
+        if: matrix.platform == 'windows'
+        shell: pwsh
+        run: |
+          $addon = "release/win-unpacked/resources/app.asar.unpacked/native/snap-preview/build/Release/snap_preview.node"
+          if (-not (Test-Path $addon)) { throw "Missing snap preview add-on" }
+          node scripts/verify-native-addon.cjs $addon
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.platform }}-x64
+          path: |
+            desktop/release/*.AppImage
+            desktop/release/Amour-Setup-*.exe
+          if-no-files-found: error
+          retention-days: 14
+
+  publish:
+    name: Publish release
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          path: release-assets
+          merge-multiple: true
+      - name: Generate checksums
+        working-directory: release-assets
+        run: sha256sum *.AppImage *.exe > SHA256SUMS.txt
+      - name: Publish Linux and Windows downloads
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" release-assets/* --verify-tag --title "Amour! ${GITHUB_REF_NAME#v}" --notes-file ".github/releases/$GITHUB_REF_NAME.md" --latest

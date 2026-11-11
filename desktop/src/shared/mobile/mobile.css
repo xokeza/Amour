@@ -1,0 +1,113 @@
+/* Mobile uses its own navigation and player; desktop layout and data stay intact. */
+:root[data-platform="android"] {
+  --mobile-safe-top: var(--safe-area-inset-top, env(safe-area-inset-top, 0px));
+  --mobile-safe-bottom: var(
+    --safe-area-inset-bottom,
+    env(safe-area-inset-bottom, 0px)
+  );
+}
+:root[data-platform="android"],
+:root[data-platform="android"] body {
+  border-radius: 0;
+}
+:root[data-platform="android"] #root {
+  padding-top: var(--mobile-safe-top);
+  padding-bottom: var(--mobile-safe-bottom);
+  box-sizing: border-box;
+}
+:root[data-platform="android"] [data-desktop-window-controls],
+:root[data-platform="android"] [data-window-controls],
+:root[data-platform="android"] [data-desktop-header],
+:root[data-platform="android"] [data-app-sidebar] {
+  display: none;
+}
+:root[data-platform="android"] [data-app-shell] {
+  border-radius: 0;
+  padding: 0;
+  gap: 0;
+  clip-path: none !important;
+}
+:root[data-platform="android"] [data-app-main] {
+  border-radius: 0;
+  --page-inset-top: 12px;
+  --page-inset-bottom: 0px;
+  --floating-inset-bottom: 0px;
+}
+:root[data-platform="android"] [data-mobile-mini-container] {
+  margin-top: 0;
+  padding-top: 4px;
+  padding-bottom: 2px;
+}
+:root[data-platform="android"] [data-mobile-search] {
+  left: 12px !important;
+  right: 12px !important;
+  top: 8px !important;
+  padding-top: 0;
+  bottom: 76px;
+}
+:root[data-platform="android"] [data-mobile-search] > div {
+  width: 100%;
+}
+:root[data-platform="android"] [data-mobile-search] > div:not(:first-child) {
+  max-height: calc(100% - 70px);
+}
+:root[data-platform="android"] input {
+  font-size: 16px;
+}
+:root[data-platform="android"] [data-mobile-login] {
+  grid-template-columns: minmax(0, 1fr);
+  max-width: 480px;
+  max-height: calc(100% - 24px);
+  margin: 12px;
+  padding: 0;
+}
+:root[data-platform="android"] [data-mobile-login] > div {
+  min-width: 0;
+  padding: 20px;
+}
+:root[data-platform="android"] [data-mobile-login-brand] {
+  min-height: 0;
+  padding: 20px;
+  background: transparent;
+}
+:root[data-platform="android"] [data-mobile-login-brand] > img,
+:root[data-platform="android"] [data-mobile-login-brand] > div:nth-child(2) {
+  display: none;
+}
+:root[data-platform="android"] [data-mobile-login-brand] > div:last-child {
+  margin-top: 16px;
+}
+:root[data-platform="android"]
+  [data-mobile-login-brand]
+  > div:last-child
+  > div:first-child {
+  margin-bottom: 12px;
+}
+:root[data-platform="android"] [data-mobile-login-brand] h1 {
+  font-size: 26px;
+}
+:root[data-platform="android"] .amour-settings-dialog {
+  flex-direction: column !important;
+  height: min(90dvh, 800px);
+  width: calc(100vw - 20px);
+  max-width: 560px !important;
+}
+:root[data-platform="android"] [data-wave-artwork] {
+  margin-left: -8px;
+  margin-right: -8px;
+}
+@media (max-width: 640px) {
+  :root[data-platform="android"] [data-mobile-now-playing] button {
+    touch-action: manipulation;
+  }
+}
+:root[data-platform="android"] [data-mobile-sign-out] {
+  width: 48px;
+  height: 48px;
+}
+:root[data-platform="android"] [data-mobile-navigation] a,
+:root[data-platform="android"] [data-mobile-navigation] button,
+:root[data-platform="android"] [data-mobile-mini] button {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}

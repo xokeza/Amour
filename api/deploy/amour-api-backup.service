@@ -1,0 +1,11 @@
+[Unit]
+Description=Back up the Amour API database
+[Service]
+Type=oneshot
+User=amour-api
+Group=amour-api
+ExecStart=/bin/sh /opt/amour-api/current/deploy/backup.sh
+UMask=0077
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/amour-api

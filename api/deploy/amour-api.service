@@ -1,0 +1,35 @@
+[Unit]
+Description=Amour account and library API
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=amour-api
+Group=amour-api
+WorkingDirectory=/opt/amour-api/current
+Environment=NODE_ENV=production
+Environment=HOST=127.0.0.1
+Environment=PORT=3138
+Environment=AMOUR_DATABASE=/var/lib/amour-api/amour.sqlite
+Environment=AMOUR_LEGACY_BASE=https://api.tryliner.fun
+ExecStart=/usr/bin/node /opt/amour-api/current/src/server.mjs
+Restart=on-failure
+RestartSec=3
+StateDirectory=amour-api
+StateDirectoryMode=0700
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+ReadWritePaths=/var/lib/amour-api
+MemoryMax=512M
+TasksMax=96
+
+[Install]
+WantedBy=multi-user.target
