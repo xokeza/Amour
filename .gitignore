@@ -84,3 +84,8 @@ signer/target/
 .amour_local_cache/
 temp_cover.bin
 test_stills/
+
+# Automated AI review configuration
+.coderabbit.yaml
+.coderabbit.yml
+.continue/
